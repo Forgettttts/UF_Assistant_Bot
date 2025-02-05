@@ -1,13 +1,13 @@
-# Use an official lightweight Python image
-FROM python:3.10
+# Use an official lightweight Debian-based Python image
+FROM python:3.10-slim-buster
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Install locales and set es_CL.UTF-8
 RUN apt-get update && apt-get install -y locales \
+    && echo "es_CL.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen es_CL.UTF-8 \
-    && dpkg-reconfigure --frontend=noninteractive locales \
     && update-locale LANG=es_CL.UTF-8
 
 # Set environment variables for locale
