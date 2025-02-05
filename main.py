@@ -11,7 +11,6 @@ from telegram.ext import (
     filters,
 )
 from notion_client import Client
-import locale
 
 
 # Load environment variables
@@ -23,12 +22,27 @@ NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 # Initialize Notion API client
 notion = Client(auth=NOTION_TOKEN)
 
-# Set the locale to Spanish (Chile)
-locale.setlocale(locale.LC_ALL, "es_ES.UTF-8")
 
+def formato_CLP(monto: float):
+    """
+    Descripción: Esta función recibe un monto en pesos chilenos y lo formatea con puntos y signo de peso.
 
-def format_currency(value):
-    return locale.currency(value, grouping=True)
+    Inputs:
+    - monto (float): El monto a formatear.
+
+    Outputs:
+    - (str): El monto formateado con puntos y signo de peso.
+    """
+    # Redondear el monto, transformarlo a string y revertirlo
+    monto_reversed = str(round(monto))[::-1]
+    # Dividir el monto en partes de 3 caracteres
+    parts = [monto_reversed[i : i + 3] for i in range(0, len(monto_reversed), 3)]
+
+    # Unir las partes con puntos entre ellas y revertir el string
+    monto_formatted = ".".join(parts)[::-1]
+
+    # Agregar el signo de peso al principio
+    return "$" + monto_formatted
 
 
 async def start(update: Update, context):
@@ -98,7 +112,7 @@ async def calcular_ahorro(update: Update, context, nombre: str):
             "number"
         ]
         print(f"El ahorro del mes para {nombre} es de {ahorroMes}.\n")
-        ahorro_con_formato = format_currency(ahorroMes)
+        ahorro_con_formato = formato_CLP(ahorroMes)
         await update.callback_query.message.reply_text(
             f"😎 El ahorro de este mes para {nombre} es de CLP{ahorro_con_formato}"
         )
@@ -115,7 +129,8 @@ def getValorUF():
 
 
 async def consulta_uf(update: Update, context):
-    formatted_uf_value = format_currency(getValorUF())
+    formatted_uf_value = formato_CLP(getValorUF())
+    print(f"El tipo de variable del valor de la UF es: {type(getValorUF())}")
     await update.callback_query.message.reply_text(
         f"🙀 El valor de la UF hoy es de CLP{formatted_uf_value}"
     )
@@ -188,7 +203,7 @@ def update_salary_for_current_month(new_salary: int, persona: str):
                     },
                 )
                 print(
-                    f"Sueldo actulizado para Caro.\n\tMes: {current_month}.\n\tSueldo nuevo:CLP{format_currency(new_salary)}.\n"
+                    f"Sueldo actulizado para Caro.\n\tMes: {current_month}.\n\tSueldo nuevo:CLP{formato_CLP(new_salary)}.\n"
                 )
             case "Alan":
                 notion.pages.update(
@@ -198,7 +213,7 @@ def update_salary_for_current_month(new_salary: int, persona: str):
                     },
                 )
                 print(
-                    f"Sueldo actulizado para Alan.\n\tMes: {current_month}.\n\tSueldo nuevo:CLP{format_currency(new_salary)}.\n"
+                    f"Sueldo actulizado para Alan.\n\tMes: {current_month}.\n\tSueldo nuevo:CLP{formato_CLP(new_salary)}.\n"
                 )
     else:
         print(f"No se encontraron registros del mes {current_month}")
@@ -231,7 +246,7 @@ async def save_salary(update: Update, context):
             )
             update_salary_for_current_month(salary, "Caro")
             await update.message.reply_text(
-                f"✅ Se actualizó correctamente el sueldo de este mes de Caro (CLP{format_currency(salary)})."
+                f"✅ Se actualizó correctamente el sueldo de este mes de Caro (CLP{formato_CLP(salary)})."
             )
             context.user_data["awaiting_salary"] = False  # Reset state
             return
@@ -247,7 +262,7 @@ async def save_salary(update: Update, context):
         )
 
         await update.message.reply_text(
-            f"Se guardó correctamente:\n\n\t✅ | Sueldo de este mes de Caro (CLP{format_currency(salary)}).\n\t✅ | Valor de la UF de este mes(CLP{format_currency(getValorUF())}).\n\nRecuerdale al Alan que ingrese su sueldo👀"
+            f"Se guardó correctamente:\n\n\t✅ | Sueldo de este mes de Caro (CLP{formato_CLP(salary)}).\n\t✅ | Valor de la UF de este mes(CLP{formato_CLP(getValorUF())}).\n\nRecuerdale al Alan que ingrese su sueldo👀"
         )
         context.user_data["awaiting_salary"] = False  # Reset state
     elif not context.user_data.get("awaiting_salary") and context.user_data.get(
@@ -270,7 +285,7 @@ async def save_salary(update: Update, context):
             )
             update_salary_for_current_month(salary, "Alan")
             await update.message.reply_text(
-                f"✅ Se actualizó correctamente el sueldo de este mes de Alan (CLP{format_currency(salary)})."
+                f"✅ Se actualizó correctamente el sueldo de este mes de Alan (CLP{formato_CLP(salary)})."
             )
             context.user_data["awaiting_salary"] = False  # Reset state
             return
@@ -286,7 +301,7 @@ async def save_salary(update: Update, context):
         )
 
         await update.message.reply_text(
-            f"Se guardó correctamente:\n\t✅ | Sueldo de este mes de Alan (CLP{format_currency(salary)}).\n\t✅ | Valor de la UF de este mes(CLP{format_currency(getValorUF())}).\nRecuerdale a la Caro que ingrese su sueldo👀"
+            f"Se guardó correctamente:\n\t✅ | Sueldo de este mes de Alan (CLP{formato_CLP(salary)}).\n\t✅ | Valor de la UF de este mes(CLP{formato_CLP(getValorUF())}).\nRecuerdale a la Caro que ingrese su sueldo👀"
         )
         context.user_data["awaiting_salary_alan"] = False  # Reset state
 

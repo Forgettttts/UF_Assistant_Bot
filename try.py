@@ -44,6 +44,21 @@ def test_connection():
         print(f"Error: {e}")
 
 
-# Run the test function
-if __name__ == "__main__":
-    test_connection()
+# # Run the test function
+# if __name__ == "__main__":
+#     test_connection()
+def formato_CLP(monto: float):
+    # Redondear el monto, transformarlo a string y revertirlo
+    monto_reversed = str(round(monto))[::-1]
+    # Dividir el monto en partes de 3 caracteres
+    parts = [monto_reversed[i : i + 3] for i in range(0, len(monto_reversed), 3)]
+
+    # Unir las partes con puntos entre ellas y revertir el string
+    monto_formatted = ".".join(parts)[::-1]
+
+    # Agregar el signo de peso al principio
+    return "$" + monto_formatted
+
+
+print(formato_CLP(1960000))
+print(formato_CLP(750000))
