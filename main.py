@@ -24,7 +24,7 @@ NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
 
 # Set the locale to Spanish (Chile)
-locale.setlocale(locale.LC_ALL, "es_CL.UTF-8")
+locale.setlocale(locale.LC_ALL, "es_ES.UTF-8")
 
 
 def format_currency(value):
