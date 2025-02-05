@@ -10,5 +10,7 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+EXPOSE 8080
+
 # Run the bot
-CMD ["python", "main.py"]
+CMD ["python", "main.py", "--port", "8080"]
