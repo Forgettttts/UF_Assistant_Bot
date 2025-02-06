@@ -48,6 +48,15 @@ def test_connection():
 # if __name__ == "__main__":
 #     test_connection()
 def formato_CLP(monto: float):
+    """
+    Descripción: Esta función recibe un monto en pesos chilenos y lo formatea con puntos y signo de peso.
+
+    Inputs:
+    - monto (float): El monto a formatear.
+
+    Outputs:
+    - (str): El monto formateado con puntos y signo de peso.
+    """
     # Redondear el monto, transformarlo a string y revertirlo
     monto_reversed = str(round(monto))[::-1]
     # Dividir el monto en partes de 3 caracteres

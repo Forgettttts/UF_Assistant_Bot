@@ -10,7 +10,8 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Expose port 8080 (required by Render)
 EXPOSE 8080
 
-# Run the bot
-CMD ["python", "main.py", "--port", "8080"]
+# Run both the bot and a dummy web server
+CMD ["sh", "-c", "python main.py & python server.py"]
